@@ -2,9 +2,9 @@
 Pagerank Implementation in C#
 
 # How to use?
-Just run Program.cs or write the following
+Just run Program.cs or write the following for a unweighted graph implementation
 ```
-Graph graph = new Graph();
+DirectedGraph graph = new DirectedGraph();
 
 graph.addNode("1");
 graph.addNode("2");
@@ -25,4 +25,5 @@ foreach(var token in tokens)
 {
     Console.WriteLine(token);
 }
+
 ```
