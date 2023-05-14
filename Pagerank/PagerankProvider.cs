@@ -1,39 +1,39 @@
 ﻿using System;
 using System.Collections.Generic;
 
-public class PageRank
+public class PagerankProvider
 {
-	public Graph Graph = new Graph();
+	public DirectedGraph DirectedGraph = new DirectedGraph();
 	public Dictionary<string, double> tokens{ get; set; }
 
 	private Dictionary<string , double> oldScores = new Dictionary<string , double>();
 	private Dictionary<string, double> newScores = new Dictionary<string , double>();
 
 
-	const double SIGNIFICANT_THRESHHOLD = 0.001;
-	const double DAMPING_FACTOR = 0.85;
-	const double INITIAL_VERTEX_SCORE = 0.25;
-	const int MAX_ITERATIONS = 100;
+	private double significantThreshhold = StaticData.SIGNIFICANT_THRESHHOLD;
+	private double dampingFactor = StaticData.DAMPING_FACTOR;
+	private double initialNodeScore = StaticData.INITIAL_VERTEX_SCORE;
+	private int maxIterations = StaticData.MAX_ITERATIONS;
 
-    public PageRank(Graph graph, Dictionary<string, double> tokens)
+    public PagerankProvider(DirectedGraph graph, Dictionary<string, double> tokens)
 	{
-		Graph = graph;
+		DirectedGraph = graph;
 		this.tokens = tokens;
 	}
 
 	Boolean checkSignificantDiff(double oldV, double newV)
 	{
 		double diff = newV > oldV ? newV - oldV : oldV - newV;
-		return diff > SIGNIFICANT_THRESHHOLD;
+		return diff > significantThreshhold;
 	}
 
 	public Dictionary<string, double> calculatePageRank(Boolean normalize)
 	{
-		int n = Graph.getAllNodes().Count;
-		foreach(var node in Graph.getAllNodes())
+		int n = DirectedGraph.getAllNodes().Count;
+		foreach(var node in DirectedGraph.getAllNodes())
 		{
-			oldScores[node] = INITIAL_VERTEX_SCORE;
-			newScores[node] = INITIAL_VERTEX_SCORE;
+			oldScores[node] = initialNodeScore;
+			newScores[node] = initialNodeScore;
 		}
 
 		Boolean enoughIterations = false;
@@ -42,14 +42,14 @@ public class PageRank
 		while (!enoughIterations)
 		{
 			int insignificant = 0;
-			foreach(var nodeName in Graph.getAllNodes())
+			foreach(var nodeName in DirectedGraph.getAllNodes())
 			{
-                List < Tuple<string, string> > incomingEdges = Graph.getIncomingEdgesof(nodeName);
-				double tokenRank = (1-DAMPING_FACTOR);
+                List < Tuple<string, string> > incomingEdges = DirectedGraph.getIncomingEdgesof(nodeName);
+				double tokenRank = (1-dampingFactor);
 				double comingScore = 0;
 				foreach(var edge in incomingEdges){
 					string source1 = edge.Item1;
-					int outDegree = Graph.getOutDegreeof(source1);
+					int outDegree = DirectedGraph.getOutDegreeof(source1);
 
 					double score = oldScores[source1];
 
@@ -63,7 +63,7 @@ public class PageRank
 
 				}
 
-				comingScore *= DAMPING_FACTOR;
+				comingScore *= dampingFactor;
 				tokenRank += comingScore;
 				Boolean isSignificant = checkSignificantDiff(oldScores[nodeName], tokenRank);
 
@@ -84,7 +84,7 @@ public class PageRank
 
 			itercount++;
 
-			if (itercount == MAX_ITERATIONS || insignificant == Graph.getAllNodes().Count())
+			if (itercount == maxIterations || insignificant == DirectedGraph.getAllNodes().Count())
 			{
 				enoughIterations = true;
 			}

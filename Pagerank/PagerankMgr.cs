@@ -2,9 +2,9 @@
 
 public class PageRankMgr
 {
-	public Graph graph { get; set; }
+	public DirectedGraph graph { get; set; }
 
-	public PageRankMgr(Graph graph)
+	public PageRankMgr(DirectedGraph graph)
 	{
 		this.graph = graph;
 	}
@@ -14,7 +14,7 @@ public class PageRankMgr
 		List<string> nodes = graph.getAllNodes();
 		Dictionary<string, double> tokens = new Dictionary<string, double>();
 
-		PageRank pgRank = new PageRank(graph, tokens);
+		PagerankProvider pgRank = new PagerankProvider(graph, tokens);
 		return pgRank.calculatePageRank(normalize);
 	}
 }

@@ -1,5 +1,17 @@
 ﻿// See https://aka.ms/new-console-template for more information
-Graph graph = new Graph();
+DirectedGraph graph = new DirectedGraph();
+DirectedGraphWeighted weighted = new DirectedGraphWeighted();
+
+weighted.addNode("1");
+weighted.addNode("2");
+weighted.addNode("3");
+weighted.addNode("4");
+
+weighted.addEdge("1", "2");
+weighted.addEdge("2", "3");
+weighted.addEdge("2", "4");
+weighted.addEdge("3", "2");
+weighted.addEdge("4", "3");
 
 graph.addNode("1");
 graph.addNode("2");
