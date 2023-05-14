@@ -20,11 +20,11 @@ wgraph.addNode("2");
 wgraph.addNode("3");
 wgraph.addNode("4");
 
-wgraph.addEdge("1", "2");
-wgraph.addEdge("2", "3");
-wgraph.addEdge("2", "4");
-wgraph.addEdge("3", "2");
-wgraph.addEdge("4", "3");
+wgraph.addEdge("1", "2", 0);
+wgraph.addEdge("2", "3", 0);
+wgraph.addEdge("2", "4", 0);
+wgraph.addEdge("3", "2", 0);
+wgraph.addEdge("4", "3", 0);
 
 Boolean normalizeScores = false;
 
