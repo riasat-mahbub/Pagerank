@@ -4,22 +4,40 @@ using System.Collections.Generic;
 
 public class DirectedGraphWeighted
 {
-    public List<Tuple<string, List< Tuple<string, int> > > > graph = new List<Tuple<string, List<Tuple<string, int>>>>();
+    public List<Tuple<string, List< Tuple<string, double> > > > graph = new List<Tuple<string, List<Tuple<string, double>>>>();
     public DirectedGraphWeighted()
     {
-        graph = new List<Tuple<string, List<Tuple<string, int>>>>();
+        graph = new List<Tuple<string, List<Tuple<string, double>>>>();
     }
 
     public void addNode(string nodeName)
     {
-        Tuple<string, List<Tuple<string, int>>> newNode = new Tuple<string, List<Tuple<string, int>>>(nodeName, new List<Tuple<string, int>>());
+        Tuple<string, List<Tuple<string, double>>> newNode = new Tuple<string, List<Tuple<string, double>>>(nodeName, new List<Tuple<string, double>>());
         graph.Add(newNode);
     }
 
-    public void addEdge(string source, string destination, int weight=0)
+    public void addEdge(string source, string destination, double weight=0)
     {
-        List<Tuple<string,int>> sourceNode = graph.Find(pair => pair.Item1.Equals(source)).Item2;
-        sourceNode.Add(new Tuple<string, int>(destination, weight));
+        List<Tuple<string,double>> sourceNode = graph.Find(pair => pair.Item1.Equals(source)).Item2;
+        sourceNode.Add(new Tuple<string, double>(destination, weight));
+    }
+
+    public double getEdgeWeight(Tuple<string, string> incomingEdge)
+    {
+        string sourceNodeName = incomingEdge.Item1;
+        string destNodeName = incomingEdge.Item2;
+
+        double result = 0;
+        foreach(var node in graph)
+        {
+            List<Tuple<string, double>> outgoingEdges = node.Item2;
+            if (outgoingEdges.Any(edge => edge.Item1 == sourceNodeName))
+            {
+                result = outgoingEdges.Find(edge => edge.Item1 == sourceNodeName).Item2;
+            }
+        }
+
+        return result;
     }
 
     public List<string> getAllNodes()
@@ -38,7 +56,7 @@ public class DirectedGraphWeighted
         List<Tuple<string, string>> incomingEdges = new List<Tuple<string, string>>();
         foreach (var node in graph)
         {
-            List< Tuple<string, int>> outgoingEdges = node.Item2;
+            List< Tuple<string, double>> outgoingEdges = node.Item2;
             if (outgoingEdges.Any(edge => edge.Item1 == nodeName))
             {
                 incomingEdges.Add(new Tuple<string, string>(node.Item1, nodeName));
@@ -49,7 +67,7 @@ public class DirectedGraphWeighted
 
     public int getOutDegreeof(string nodeName)
     {
-        List<Tuple<string, int> > connections = graph.Find(pair => pair.Item1.Equals(nodeName)).Item2;
+        List<Tuple<string, double> > connections = graph.Find(pair => pair.Item1.Equals(nodeName)).Item2;
         return connections.Count;
     }
 

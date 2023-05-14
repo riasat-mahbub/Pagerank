@@ -3,7 +3,8 @@ using System.Collections.Generic;
 
 public class PagerankProvider
 {
-	public DirectedGraph DirectedGraph = new DirectedGraph();
+	public DirectedGraph directedGraph = new DirectedGraph();
+	public DirectedGraphWeighted directedGraphWeighted = new DirectedGraphWeighted();
 	public Dictionary<string, double> tokens{ get; set; }
 
 	private Dictionary<string , double> oldScores = new Dictionary<string , double>();
@@ -17,7 +18,13 @@ public class PagerankProvider
 
     public PagerankProvider(DirectedGraph graph, Dictionary<string, double> tokens)
 	{
-		DirectedGraph = graph;
+		directedGraph = graph;
+		this.tokens = tokens;
+	}
+
+	public PagerankProvider(DirectedGraphWeighted graph, Dictionary<string, double> tokens)
+	{
+		this.directedGraphWeighted = graph;
 		this.tokens = tokens;
 	}
 
@@ -29,8 +36,8 @@ public class PagerankProvider
 
 	public Dictionary<string, double> calculatePageRank(Boolean normalize)
 	{
-		int n = DirectedGraph.getAllNodes().Count;
-		foreach(var node in DirectedGraph.getAllNodes())
+		int n = directedGraph.getAllNodes().Count;
+		foreach(var node in directedGraph.getAllNodes())
 		{
 			oldScores[node] = initialNodeScore;
 			newScores[node] = initialNodeScore;
@@ -42,14 +49,14 @@ public class PagerankProvider
 		while (!enoughIterations)
 		{
 			int insignificant = 0;
-			foreach(var nodeName in DirectedGraph.getAllNodes())
+			foreach(var nodeName in directedGraph.getAllNodes())
 			{
-                List < Tuple<string, string> > incomingEdges = DirectedGraph.getIncomingEdgesof(nodeName);
+                List < Tuple<string, string> > incomingEdges = directedGraph.getIncomingEdgesof(nodeName);
 				double tokenRank = (1-dampingFactor);
 				double comingScore = 0;
 				foreach(var edge in incomingEdges){
 					string source1 = edge.Item1;
-					int outDegree = DirectedGraph.getOutDegreeof(source1);
+					int outDegree = directedGraph.getOutDegreeof(source1);
 
 					double score = oldScores[source1];
 
@@ -84,7 +91,7 @@ public class PagerankProvider
 
 			itercount++;
 
-			if (itercount == maxIterations || insignificant == DirectedGraph.getAllNodes().Count())
+			if (itercount == maxIterations || insignificant == directedGraph.getAllNodes().Count())
 			{
 				enoughIterations = true;
 			}
@@ -101,7 +108,86 @@ public class PagerankProvider
 
 	}
 
-	protected void recordOriginalScores()
+    public Dictionary<string, double> calculatePageRankWeighted(Boolean normalize)
+    {
+        int n = directedGraphWeighted.getAllNodes().Count;
+        foreach (var node in directedGraphWeighted.getAllNodes())
+        {
+            oldScores[node] = initialNodeScore;
+            newScores[node] = initialNodeScore;
+        }
+
+        Boolean enoughIterations = false;
+        int itercount = 0;
+
+        while (!enoughIterations)
+        {
+            int insignificant = 0;
+            foreach (var nodeName in directedGraphWeighted.getAllNodes())
+            {
+                List<Tuple<string, string>> incomingEdges = directedGraphWeighted.getIncomingEdgesof(nodeName);
+                double tokenRank = (1 - dampingFactor);
+                double comingScore = 0;
+                foreach (var edge in incomingEdges)
+                {
+                    string source1 = edge.Item1;
+                    int outDegree = directedGraphWeighted.getOutDegreeof(source1);
+
+                    double score = oldScores[source1];
+					double edgeWeight = directedGraphWeighted.getEdgeWeight(edge);
+
+					score += edgeWeight;
+
+                    if (outDegree == 0)
+                    {
+                        comingScore += score;
+                    }
+                    else
+                    {
+                        comingScore += (score / outDegree);
+                    }
+
+                }
+
+                comingScore *= dampingFactor;
+                tokenRank += comingScore;
+                Boolean isSignificant = checkSignificantDiff(oldScores[nodeName], tokenRank);
+
+                if (isSignificant)
+                {
+                    newScores[nodeName] = tokenRank;
+                }
+                else
+                {
+                    insignificant++;
+                }
+            }
+
+            foreach (var item in newScores)
+            {
+                oldScores[item.Key] = item.Value;
+            }
+
+            itercount++;
+
+            if (itercount == maxIterations || insignificant == directedGraphWeighted.getAllNodes().Count())
+            {
+                enoughIterations = true;
+            }
+        }
+        if (normalize)
+        {
+            recordNormalizedScores();
+        }
+        else
+        {
+            recordOriginalScores();
+        }
+        return this.tokens;
+
+    }
+
+    protected void recordOriginalScores()
 	{
 		foreach(var key in newScores)
 		{

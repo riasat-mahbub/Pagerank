@@ -4,7 +4,7 @@ using System.Collections;
 public class DirectedGraph
 {
 	private DirectedGraphWeighted directedGraphWeighted;
-    public List<Tuple<string, List<Tuple<string, int>>>> graph = new List<Tuple<string, List<Tuple<string, int>>>>();
+    public List<Tuple<string, List<Tuple<string, double>>>> graph = new List<Tuple<string, List<Tuple<string, double>>>>();
     public DirectedGraph()
 	{
 		directedGraphWeighted = new DirectedGraphWeighted();
